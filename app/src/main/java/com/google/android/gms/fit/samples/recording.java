@@ -19,10 +19,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.fit.samples.basicsensorsapi.R;
@@ -45,7 +45,7 @@ import java.util.List;
  * to data sources, query against existing subscriptions, and remove subscriptions. It also
  * demonstrates how to authenticate a user with Google Play Services.
  */
-public class recording extends AppCompatActivity {
+public class recording extends Activity {
     public static final String TAG = "BasicRecordingApi";
 
     private static final int REQUEST_OAUTH_REQUEST_CODE = 1;
@@ -58,8 +58,8 @@ public class recording extends AppCompatActivity {
         // screen, as well as to adb logcat.
         initializeLogging();
 
-        FitnessOptions fitnessOptions =
-                FitnessOptions.builder().addDataType(DataType.TYPE_ACTIVITY_SAMPLES).build();
+        FitnessOptions fitnessOptions = FitnessOptions.builder().addDataType(DataType.TYPE_HEART_RATE_BPM).build();
+
 
         // Check if the user has permissions to talk to Fitness APIs, otherwise authenticate the
         // user and request required permissions.
@@ -95,7 +95,7 @@ public class recording extends AppCompatActivity {
         // active, fitness data will start recording.
         // [START subscribe_to_datatype]
         Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .subscribe(DataType.TYPE_ACTIVITY_SAMPLES)
+                .subscribe(DataType.TYPE_HEART_RATE_BPM)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
@@ -118,7 +118,7 @@ public class recording extends AppCompatActivity {
     private void dumpSubscriptionsList() {
         // [START list_current_subscriptions]
         Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .listSubscriptions(DataType.TYPE_ACTIVITY_SAMPLES)
+                .listSubscriptions(DataType.TYPE_HEART_RATE_BPM)
                 .addOnSuccessListener(new OnSuccessListener<List<Subscription>>() {
                     @Override
                     public void onSuccess(List<Subscription> subscriptions) {
@@ -135,14 +135,14 @@ public class recording extends AppCompatActivity {
      * Cancels the ACTIVITY_SAMPLE subscription by calling unsubscribe on that {@link DataType}.
      */
     private void cancelSubscription() {
-        final String dataTypeStr = DataType.TYPE_ACTIVITY_SAMPLES.toString();
+        final String dataTypeStr = DataType.TYPE_HEART_RATE_BPM.toString();
         Log.i(TAG, "Unsubscribing from data type: " + dataTypeStr);
 
         // Invoke the Recording API to unsubscribe from the data type and specify a callback that
         // will check the result.
         // [START unsubscribe_from_datatype]
         Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
-                .unsubscribe(DataType.TYPE_ACTIVITY_SAMPLES)
+                .unsubscribe(DataType.TYPE_HEART_RATE_BPM)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {

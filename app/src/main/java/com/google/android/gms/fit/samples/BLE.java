@@ -1,10 +1,22 @@
 package com.google.android.gms.fit.samples;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Handler;
+
+import androidx.annotation.RequiresApi;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.fit.samples.basicsensorsapi.R;
 import com.google.android.gms.fit.samples.common.logger.Log;
 import com.google.android.gms.fitness.Fitness;
@@ -14,51 +26,57 @@ import com.google.android.gms.fitness.request.BleScanCallback;
 import com.google.android.gms.tasks.Task;
 
 
-import java.util.Arrays;
+import org.jetbrains.annotations.Nullable;
 
-public class BLE extends AppCompatActivity {
-    public static final String TAG = "BLE";
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+
+
+
+@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+public class BLE extends Activity {
+    private static Logger LOGGER = Logger.getLogger("BLE_TEST");
+    private static final int REQUEST_ENABLE_BT = 1;
+
+    private BluetoothLeScanner bluetoothLeScanner =
+            BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+    private boolean mScanning;
+    private Handler handler = new Handler();
+
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble);
-       // startBleScan();
-       /* BleScanCallback bleScanCallbacks = new BleScanCallback() {
-            @Override
-            public void onDeviceFound(BleDevice device) {
-                Log.i(TAG, "Successfully subscribed!");
-               //device.getName();
-            }
-            @Override
-            public void onScanStopped() {
-                Log.i(TAG, "ERROR subscribed!");
-                // The scan timed out or was interrupted
-            }*/
-        };
+        final BluetoothManager bluetoothManager =
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+        //if ble close.It will request to enable open ble
+        if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+        LOGGER.info("BLE are opened");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_ENABLE_BT){
+            LOGGER.info("BLE was open");
+        }
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        int a = 1 ;
-        if(a == 1 ) Log.d(TAG,"TEST");
-        else Log.i(TAG, "Ready");
+        // Check Ble is supported on smart phone.
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE))
+           LOGGER.info("ble_not_supported");
+        else
+            LOGGER.info("ble_supported");
     }
-
-    public void startBleScan() {
-        BleScanCallback callback = new BleScanCallback() {
-            @Override
-            public void onDeviceFound(BleDevice device) {
-                Log.i(TAG, "BLE Device Found: " + device.getName());
-                //claimDevice(device);
-            }
-
-            @Override
-            public void onScanStopped() {
-
-                Log.i(TAG, "BLE scan stopped");
-            }
-        };
-
-    }
-    }
+}
 

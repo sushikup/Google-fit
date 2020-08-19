@@ -24,16 +24,17 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.design.BuildConfig;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.fit.samples.basicsensorsapi.BuildConfig;
 import com.google.android.gms.fit.samples.basicsensorsapi.R;
 import com.google.android.gms.fit.samples.common.logger.Log;
 import com.google.android.gms.fit.samples.common.logger.LogView;
@@ -53,6 +54,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +64,7 @@ import java.util.concurrent.TimeUnit;
  * data sources and to register/unregister listeners to those sources. It also demonstrates how to
  * authenticate a user with Google Play Services.
  */
-public class sensors extends AppCompatActivity {
+public class sensors extends Activity {
 
   public static final String TAG = "BasicSensorsApi";
 
@@ -75,15 +78,22 @@ public class sensors extends AppCompatActivity {
   // [END mListener_variable_reference]
 
   // [START auth_oncreate_setup]
+
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     // Put application specific code here.
-
     setContentView(R.layout.activity_sensors);
     // This method sets up our custom logger, which will print all log messages to the device
     // screen, as well as to adb logcat.
+    Button button_unlistener = (Button) findViewById(R.id.unlistener);
+    button_unlistener.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        unregisterFitnessDataListener();
+      }
+    });
     initializeLogging();
 
     // When permissions are revoked the app is restarted so onCreate is sufficient to check for

@@ -26,5 +26,12 @@ limitations under the License.
         functionality.</string>
     <string name="settings">Settings</string>
     <string name="ok">OK</string>
+    <string name="ble_not_supported" />
+    <string name="ble_supported" />
+    <string name="sensors">SENSORS</string>
+    <string name="record">RECORD</string>
+    <string name="ble">BLE</string>
+    <string name="sensor">sensor</string>
+    <string name="unlistener">Unlistener</string>
     <item name="action_cancel_subs" type="id" />
 </resources>
