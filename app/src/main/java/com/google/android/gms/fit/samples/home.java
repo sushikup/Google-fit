@@ -31,5 +31,13 @@ public class home extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        Button button_ble = (Button) findViewById(R.id.ble);
+        button_ble.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(home.this, BLE.class);
+                startActivity(intent);
+            }
+        });
     }
 }
