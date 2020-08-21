@@ -33,5 +33,6 @@ limitations under the License.
     <string name="ble">BLE</string>
     <string name="sensor">sensor</string>
     <string name="unlistener">Unlistener</string>
+    <string name="unrecord">unrecord</string>
     <item name="action_cancel_subs" type="id" />
 </resources>

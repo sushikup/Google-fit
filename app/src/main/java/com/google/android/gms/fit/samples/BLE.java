@@ -10,25 +10,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-
 import androidx.annotation.RequiresApi;
-
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.fit.samples.basicsensorsapi.R;
-import com.google.android.gms.fit.samples.common.logger.Log;
-import com.google.android.gms.fitness.Fitness;
-import com.google.android.gms.fitness.data.BleDevice;
-import com.google.android.gms.fitness.data.DataType;
-import com.google.android.gms.fitness.request.BleScanCallback;
-import com.google.android.gms.tasks.Task;
-
-
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 

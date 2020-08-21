@@ -21,6 +21,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 
@@ -38,13 +40,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
-
-
-/**
- * This sample demonstrates how to use the Recording API of the Google Fit platform to subscribe
- * to data sources, query against existing subscriptions, and remove subscriptions. It also
- * demonstrates how to authenticate a user with Google Play Services.
- */
 public class recording extends Activity {
     public static final String TAG = "BasicRecordingApi";
 
@@ -54,15 +49,17 @@ public class recording extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recording);
-        // This method sets up our custom logger, which will print all log messages to the device
-        // screen, as well as to adb logcat.
+        Button button_unrecord = (Button) findViewById(R.id.unrecord);
+        button_unrecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelSubscription();
+            }
+        });
         initializeLogging();
 
         FitnessOptions fitnessOptions = FitnessOptions.builder().addDataType(DataType.TYPE_HEART_RATE_BPM).build();
 
-
-        // Check if the user has permissions to talk to Fitness APIs, otherwise authenticate the
-        // user and request required permissions.
         if (!GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)) {
             GoogleSignIn.requestPermissions(
                     this,
@@ -83,17 +80,7 @@ public class recording extends Activity {
         }
     }
 
-    /**
-     * Subscribes to an available {@link DataType}. Subscriptions can exist across application
-     * instances (so data is recorded even after the application closes down).  When creating
-     * a new subscription, it may already exist from a previous invocation of this app.  If
-     * the subscription already exists, the method is a no-op.  However, you can check this with
-     * a special success code.
-     */
     public void subscribe() {
-        // To create a subscription, invoke the Recording API. As soon as the subscription is
-        // active, fitness data will start recording.
-        // [START subscribe_to_datatype]
         Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
                 .subscribe(DataType.TYPE_HEART_RATE_BPM)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -111,10 +98,6 @@ public class recording extends Activity {
         // [END subscribe_to_datatype]
     }
 
-    /**
-     * Fetches a list of all active subscriptions and log it. Since the logger for this sample
-     * also prints to the screen, we can see what is happening in this way.
-     */
     private void dumpSubscriptionsList() {
         // [START list_current_subscriptions]
         Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
@@ -131,16 +114,9 @@ public class recording extends Activity {
         // [END list_current_subscriptions]
     }
 
-    /**
-     * Cancels the ACTIVITY_SAMPLE subscription by calling unsubscribe on that {@link DataType}.
-     */
     private void cancelSubscription() {
         final String dataTypeStr = DataType.TYPE_HEART_RATE_BPM.toString();
         Log.i(TAG, "Unsubscribing from data type: " + dataTypeStr);
-
-        // Invoke the Recording API to unsubscribe from the data type and specify a callback that
-        // will check the result.
-        // [START unsubscribe_from_datatype]
         Fitness.getRecordingClient(this, GoogleSignIn.getLastSignedInAccount(this))
                 .unsubscribe(DataType.TYPE_HEART_RATE_BPM)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -179,22 +155,12 @@ public class recording extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     *  Initializes a custom log class that outputs both to in-app targets and logcat.
-     */
     private void initializeLogging() {
-        // Wraps Android's native log framework.
         LogWrapper logWrapper = new LogWrapper();
-        // Using Log, front-end to the logging chain, emulates android.util.log method signatures.
         Log.setLogNode(logWrapper);
-        // Filter strips out everything except the message text.
         MessageOnlyLogFilter msgFilter = new MessageOnlyLogFilter();
         logWrapper.setNext(msgFilter);
-        // On screen logging via a customized TextView.
         LogView logView = (LogView) findViewById(R.id.sample_logview);
-
-        // Fixing this lint error adds logic without benefit.
-        //noinspection AndroidLintDeprecation
         logView.setTextAppearance(this, R.style.Log);
 
         logView.setBackgroundColor(Color.WHITE);
