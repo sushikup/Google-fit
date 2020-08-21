@@ -58,12 +58,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-/**
- * This sample demonstrates how to use the Sensors API of the Google Fit platform to find available
- * data sources and to register/unregister listeners to those sources. It also demonstrates how to
- * authenticate a user with Google Play Services.
- */
 public class sensors extends Activity {
 
   public static final String TAG = "BasicSensorsApi";
@@ -71,22 +65,13 @@ public class sensors extends Activity {
   private static final int REQUEST_OAUTH_REQUEST_CODE = 1;
   private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
 
-  // [START mListener_variable_reference]
-  // Need to hold a reference to this listener, as it's passed into the "unregister"
-  // method in order to stop all sensors from sending data to this listener.
   private OnDataPointListener mListener;
-  // [END mListener_variable_reference]
-
-  // [START auth_oncreate_setup]
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    // Put application specific code here.
     setContentView(R.layout.activity_sensors);
-    // This method sets up our custom logger, which will print all log messages to the device
-    // screen, as well as to adb logcat.
     Button button_unlistener = (Button) findViewById(R.id.unlistener);
     button_unlistener.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -104,11 +89,6 @@ public class sensors extends Activity {
       requestRuntimePermissions();
     }
   }
-
-  /**
-   * A wrapper for {@link #findFitnessDataSources}. If the user account has OAuth permission,
-   * continue to {@link #findFitnessDataSources}, else request OAuth permission for the account.
-   */
   private void findFitnessDataSourcesWrapper() {
     if (hasOAuthPermission()) {
       findFitnessDataSources();
@@ -117,7 +97,6 @@ public class sensors extends Activity {
     }
   }
 
-  /** Gets the {@link FitnessOptions} in order to check or request OAuth permission for the user. */
   private FitnessOptions getFitnessSignInOptions() {
     return FitnessOptions.builder().addDataType(DataType.TYPE_HEART_RATE_BPM).build();
   }
@@ -141,9 +120,6 @@ public class sensors extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
-
-    // This ensures that if the user denies the permissions then uses Settings to re-enable
-    // them, the app will start working.
     findFitnessDataSourcesWrapper();
   }
 
@@ -241,11 +217,6 @@ public class sensors extends Activity {
       // nothing to unregister.
       return;
     }
-
-    // [START unregister_data_listener]
-    // Waiting isn't actually necessary as the unregister call will complete regardless,
-    // even if called from within onStop, but a callback can still be added in order to
-    // inspect the results.
     Fitness.getSensorsClient(this, GoogleSignIn.getLastSignedInAccount(this))
         .remove(mListener)
         .addOnCompleteListener(
@@ -259,12 +230,10 @@ public class sensors extends Activity {
                 }
               }
             });
-    // [END unregister_data_listener]
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.main, menu);
     return true;
   }
@@ -282,25 +251,16 @@ public class sensors extends Activity {
   /** Initializes a custom log class that outputs both to in-app targets and logcat. */
   @RequiresApi(api = Build.VERSION_CODES.M)
   private void initializeLogging() {
-    // Wraps Android's native log framework.
     LogWrapper logWrapper = new LogWrapper();
-    // Using Log, front-end to the logging chain, emulates android.util.log method signatures.
     Log.setLogNode(logWrapper);
-    // Filter strips out everything except the message text.
     MessageOnlyLogFilter msgFilter = new MessageOnlyLogFilter();
     logWrapper.setNext(msgFilter);
-    // On screen logging via a customized TextView.
     LogView logView = (LogView) findViewById(R.id.sample_logview);
-
-    // Fixing this lint errors adds logic without benefit.
-    // noinspection AndroidLintDeprecation
     logView.setTextAppearance(R.style.Log);
-
     logView.setBackgroundColor(Color.WHITE);
     msgFilter.setNext(logView);
     Log.i(TAG, "Ready");
   }
-
   /** Returns the current state of the permissions needed. */
   private boolean hasRuntimePermissions() {
     int permissionState =
@@ -312,13 +272,9 @@ public class sensors extends Activity {
     boolean shouldProvideRationale =
         ActivityCompat.shouldShowRequestPermissionRationale(
             this, Manifest.permission.BODY_SENSORS);
-
-    // Provide an additional rationale to the user. This would happen if the user denied the
-    // request previously, but didn't check the "Don't ask again" checkbox.
     if (shouldProvideRationale) {
       Log.i(TAG, "Displaying permission rationale to provide additional context.");
       Snackbar.make(
-
           findViewById(R.id.main_activity_view),
           R.string.permission_rationale,
           Snackbar.LENGTH_INDEFINITE)
@@ -337,9 +293,6 @@ public class sensors extends Activity {
           .show();
     } else {
       Log.i(TAG, "Requesting permission");
-      // Request permission. It's possible this can be auto answered if device policy
-      // sets the permission in a given state or the user denied the permission
-      // previously and checked "Never ask again".
       ActivityCompat.requestPermissions(
           sensors.this,
           new String[] {Manifest.permission.BODY_SENSORS},
@@ -354,25 +307,11 @@ public class sensors extends Activity {
     Log.i(TAG, "onRequestPermissionResult");
     if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
       if (grantResults.length <= 0) {
-        // If user interaction was interrupted, the permission request is cancelled and you
-        // receive empty arrays.
         Log.i(TAG, "User interaction was cancelled.");
       } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         // Permission was granted.
         findFitnessDataSourcesWrapper();
       } else {
-        // Permission denied.
-
-        // In this Activity we've chosen to notify the user that they
-        // have rejected a core permission for the app since it makes the Activity useless.
-        // We're communicating this message in a Snackbar since this is a sample app, but
-        // core permissions would typically be best requested during a welcome-screen flow.
-
-        // Additionally, it is important to remember that a permission might have been
-        // rejected without asking the user for permission (device policy or "Never ask
-        // again" prompts). Therefore, a user interface affordance is typically implemented
-        // when permissions are denied. Otherwise, your app could appear unresponsive to
-        // touches or interactions which have required permissions.
         Snackbar.make(
             findViewById(R.id.main_activity_view),
             R.string.permission_denied_explanation,
@@ -382,7 +321,6 @@ public class sensors extends Activity {
                 new View.OnClickListener() {
                   @Override
                   public void onClick(View view) {
-                    // Build intent that displays the App settings screen.
                     Intent intent = new Intent();
                     intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);

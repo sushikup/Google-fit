@@ -16,9 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.logging.Logger;
 
-
-
-
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class BLE extends Activity {
     private static Logger LOGGER = Logger.getLogger("BLE_TEST");
